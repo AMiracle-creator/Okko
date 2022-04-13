@@ -6,9 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from .models import Task, TaskResult, ExtraData
-from .models.states import TaskType
-from .serialazers import TaskSerializer, TaskResultSerializer, TaskTypeSerializer, ExtraDataSerializer
-from .tasks import start_parse
+from .modules.parser_starter import start_parse
+from .serialazers import TaskSerializer, TaskResultSerializer, ExtraDataSerializer
 
 
 class MainApiView(APIView):
@@ -27,7 +26,12 @@ class TaskViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
 
-        start_parse.delay(response.data['task_id'])
+        items = request.data['data']['items']
+
+        if type(items) != type([]):
+            return Response({"message": 'items is not list'})
+
+        start_parse(response.data['task_id'], items)
 
         return response
 

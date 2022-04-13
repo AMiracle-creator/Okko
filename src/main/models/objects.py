@@ -1,4 +1,4 @@
-from main.models import BaseModel
+from main.models import BaseModel, Task
 from django.db import models
 
 from main.models.states import FormatContentModel, MetricsNameModel
@@ -21,7 +21,8 @@ class ContentModel(BaseModel):
 
 
 class MetricsModel(BaseModel):
-    material = models.ForeignKey(ContentModel, null=True, on_delete=models.SET_NULL)
+    task = models.ForeignKey(Task, null=True, on_delete=models.SET_NULL)
+    link = models.TextField()
     metrics_name = models.ForeignKey(MetricsNameModel, null=True, on_delete=models.SET_NULL,
                                      db_column='id_metrics_name')
     value = models.BigIntegerField(null=True)
