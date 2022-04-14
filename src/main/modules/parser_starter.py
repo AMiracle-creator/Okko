@@ -1,12 +1,13 @@
 import re
-from datetime import datetime
 
-import requests
 from fake_useragent import UserAgent
-from bs4 import BeautifulSoup
 
 from main.models.objects import MetricsModel
 from main.models.states import MetricsNameModel
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 
 from main.models import Task
 
@@ -22,15 +23,22 @@ def start_parse(task_id, items):
 
         # try:
             ua = UserAgent()
-            print(ua.chrome)
-            header = {'User-Agent': str(ua.chrome)}
-            response = requests.get(link, headers=header).text
+            user_agent = ua.random
+            print(user_agent)
 
-            soup = BeautifulSoup(response, 'lxml')
+            chrome_options = Options()
+            chrome_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.javascript': 2})
 
-            # try:
-            rating = soup.find('span', class_='_38dQl')
-            print(rating)
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument(f'user-agent={user_agent}')
+            chrome_options.add_argument("--start-maximized")
+            # driver = webdriver.Chrome(options=chrome_options)
+            driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+
+            driver.get(link)
+            driver.implicitly_wait(10)
+            rating = driver.find_element(by=By.XPATH, value=("//*[contains(text(),'Рейтинг')]")).text
 
             # # except Exception:
             #     rating = None
