@@ -1,3 +1,4 @@
+import json
 import re
 
 from fake_useragent import UserAgent
@@ -7,9 +8,7 @@ from main.models.states import MetricsNameModel
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-
-from main.models import Task
+from main.models import Task, TaskResult
 
 
 def start_parse(task_id, items):
@@ -34,7 +33,7 @@ def start_parse(task_id, items):
             chrome_options.add_argument(f'user-agent={user_agent}')
             chrome_options.add_argument("--start-maximized")
             # driver = webdriver.Chrome(options=chrome_options)
-            driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+            driver = webdriver.Chrome(executable_path='C://Users//1//PycharmProjects//Okko//src//main//modules//chromedriver.exe')
 
             driver.get(link)
             driver.implicitly_wait(10)
@@ -52,6 +51,28 @@ def start_parse(task_id, items):
 
         # except Exception:
         #     print('wrong link')
+
+    result = MetricsModel.objects.filter(task_id=task_id)
+    print(result)
+    if result.exists():
+        result_list = []
+        for res in result:
+            d = {}
+            d['task_id'] = task_id
+            d['link'] = res.link
+            d['metrics_id'] = res.metrics_name.pk
+            d['value'] = res.value
+
+            print(d)
+            result_list.append(d)
+
+        with open(f"files/task__{task_id}.json", "w", encoding='utf-8') as write_file:
+            json.dump(result_list, write_file)
+
+        TaskResult.objects.create(task_id=task_id, link=f"task__{task_id}.json", comment=None)
+
+    else:
+        TaskResult.objects.create(task_id=task_id, link=None, comment='Не удалось собрать метрики')
 
     task.status_id = 3
     task.save()

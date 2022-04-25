@@ -88,10 +88,10 @@ DATABASES = {
     "default": {
         "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.postgresql_psycopg2"),
         "NAME": os.environ.get("DB_NAME", "okko"),
-        "USER": os.environ.get("DB_USER", "myuser"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+        "USER": os.environ.get("DB_USER", "okko"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "root"),
         "HOST": os.environ.get("DB_HOST", "127.0.0.1"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+        "PORT": os.environ.get("DB_PORT", "5430"),
     }
 }
 
