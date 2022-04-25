@@ -7,7 +7,7 @@ from main.models.states import TaskType, TaskStatus
 
 class Task(BaseModel):
     task_type = models.ForeignKey(TaskType, null=True, on_delete=models.SET_NULL)
-    status = models.ForeignKey(TaskStatus, null=True, on_delete=models.SET_NULL)
+    status = models.ForeignKey(TaskStatus, null=True, default=1, on_delete=models.SET_NULL)
     data = models.JSONField()
     priority = models.IntegerField()
     fields = ArrayField(
@@ -24,7 +24,7 @@ class Task(BaseModel):
 
 class TaskResult(BaseModel):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    link = models.FileField()
+    link = models.FileField(null=True)
     comment = models.TextField(null=True)
 
     class Meta:
